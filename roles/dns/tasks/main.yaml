@@ -1,0 +1,5 @@
+---
+- name: Install DNS Package
+  apt:
+    name: named
+    state: present  

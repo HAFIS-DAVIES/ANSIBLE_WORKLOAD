@@ -1,0 +1,61 @@
+---
+- name: Provision nginx on ubuntu hosts
+  hosts: all
+  become: true
+
+
+  handlers:
+  - name: reload nginx
+    service:
+      name: "{{pack}}" 
+      state: reloaded
+  vars:
+    pack: nginx  
+
+  tasks:
+  - name: update apt cache
+    tags: u-nginx
+    ansible.builtin.apt:
+       update_cache: yes
+       cache_valid_time: 3600
+
+  - name: install Nginx
+    tags: i-nginx
+    apt:
+      name: "{{pack}}"
+      state: present
+
+  - name: Validate Nginx config
+    ansible.builtin.command: nginx -t
+    register: nginx_syntax
+    changed_when: false
+    failed_when: nginx_syntax.rc != 0
+      
+
+  - name: start and enable nginx
+    service:
+      name: "{{pack}}"
+      state: started
+    notify: reload nginx
+    tags: s-nginx  
+
+  - name: stop nginx
+    tags: st-nginx
+    service:
+      name: "{{pack}}"
+      state: stopped
+
+  - name: uninstall nginx
+    tags: un-nginx
+    ansible.builtin.apt:
+      name:
+        - "{{pack}}"
+        - nginx-common
+        - nginx-full
+      state: absent
+      purge: yes
+      autoremove: yes
+ 
+    
+        
+        

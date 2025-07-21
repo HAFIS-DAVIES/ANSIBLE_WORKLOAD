@@ -1,0 +1,26 @@
+---
+- name: Create Users Through Loops
+  hosts: localhost
+  become : true
+  vars:
+    users: [jerry,kramer,eliane]
+    apps: [ftp,telnet,htop]  
+
+  tasks:
+  - name: Create users
+    user:
+      name: "{{item}}"
+    with_items:  "{{users}}"
+
+  - name: Create users alternatively
+    user:
+      name: "{{item}}"
+    loop:
+     - zainab
+     - hafis
+     - ire     
+  - name: Install applications
+    apt:
+      name: "{{item}}"
+      state: present  
+    with_items: "{{apps}}"

@@ -1,0 +1,5 @@
+---
+- name: Install Time Package
+  apt:
+    name: ntpd or chrony
+    state: present  

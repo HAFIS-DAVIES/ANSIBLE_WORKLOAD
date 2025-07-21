@@ -1,0 +1,32 @@
+---
+- name: Conditions must be met
+  hosts: localhost
+  become: true  
+
+  tasks:
+
+    - name: install Apache on CentOS Server
+      yum:
+        name: httpd
+        state: present 
+      when: ansible_os_family == "RedHat"
+    
+    - name:  Update APT package index
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+        
+    - name: install Apache on Ubuntu Server
+      when: ansible_os_family == "Debian"
+      apt:
+        name: apache2
+        state: present     
+
+    - name: " start apache2"
+      service:
+        name: apache2
+        state: started
+        enabled: yes  
+      when: ansible_os_family == "Debian"
+
+
